@@ -1,28 +1,20 @@
-__author__ = 'Ilya Chernyakov'
-__alias__ = 'eliuha'
-
-# Shalom everybody !
 
 
-def validate_israeli_id_number(iID):
-    iID = str(iID)
-    if len(iID) == 8:
-        iID = '0' + str(iID)
-    if len(iID) != 9:
+
+def validate_israeli_id_number(tz):
+    tz = [((lambda i: 2 if i % 2 else 1)(multiplier), int(d)) for multiplier, d in enumerate(str(tz))]
+    min_len = 8
+    full_len = 9
+    given_len = len(tz)
+
+    if given_len < min_len or given_len > full_len:
         return False
+    elif given_len == min_len:
+        tz.insert(0, (0, 0))  # pad with leading zero
 
-    num_12_arr = [1, 2, 1, 2, 1, 2, 1, 2, 1]
-    dig = list(int(d) for d in str(iID))
+    total = 0
+    for multiplier, digit in tz:
+        product = multiplier * digit
+        total += product if product <= 9 else sum([int(d) for d in str(product)])
 
-    sum_of_digits = 0
-    for i in range(0, 9):
-        temp = num_12_arr[i] * dig[i]
-        if temp > 9:
-            t = list(int(d_1) for d_1 in str(temp))
-            temp = t[0] + t[1]
-        sum_of_digits += temp
-
-    if sum_of_digits % 10 != 0:
-        return False
-
-    return True
+    return False if total % 10 else True
